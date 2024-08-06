@@ -23,7 +23,7 @@ public class Player extends Entity{
 
 
     //move left, right Attribute
-    private float playerSpeed = 2.0f;
+    private float playerSpeed = 1.0f * Game.SCALE;
     private boolean left, right, jump;
 
     //jump and fall Attribute
@@ -37,7 +37,7 @@ public class Player extends Entity{
     public Player(float x, float y, int width, int height) {
         super(x, y, width, height);
         loadAnimation();
-        initHitBox(x, y, 20 * Game.SCALE, 28 * Game.SCALE);
+        initHitBox(x, y, (int)( 20 * Game.SCALE),(int) (28 * Game.SCALE));
     }
 
 
