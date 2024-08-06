@@ -171,6 +171,12 @@ public class Player extends Entity{
         }
     }
 
+    public void resetDirBooleans (){
+        left = false;
+        right = false;
+        jump = false;
+    }
+
     //Setter
 
     public void setLvData(int[][] lvData) {
