@@ -10,6 +10,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Player extends Entity{
+    int[][] lvData;
+
     //animation attribute
     private BufferedImage[][] animations;
     private final float xDrawOffset = 21 * Game.SCALE;
@@ -46,10 +48,13 @@ public class Player extends Entity{
     }
 
     public void update() {
-
         updateAnimationTick();
         setAnimation();
         updatePos();
+    }
+
+    public void loadLvData (int[][] lvData) {
+        this.lvData = lvData;
     }
 
 
@@ -112,55 +117,66 @@ public class Player extends Entity{
 
     //moving
     private void jump(){
-        if (onFloor(hitBox)) {
-            airSpeed = jumpSpeed;
+        if (!inAir) {
             inAir = true;
+            airSpeed = jumpSpeed;
         }
     }
 
     private void updatePos() {
         moving = false;
         float xSpeed = 0;
-
         if (jump){
             jump();
         }
-
-        if (left)
+        if (left) {
             xSpeed -= playerSpeed;
-        if (right)
-            xSpeed += playerSpeed;
-
-        if(!onFloor(hitBox)){
-            inAir = true;
+            moving = true;
         }
+        if (right) {
+            xSpeed += playerSpeed;
+            moving = true;
+        }
+        if (!onFloor(hitBox, lvData))
+            inAir = true;
 
         if (inAir){
-            hitBox.y += airSpeed;
-            airSpeed += gravity;
-            if (onFloor(hitBox)) {
-                airSpeed = 0;
-                inAir = false;
+            if (canMoveHere(hitBox.x, hitBox.y + airSpeed, hitBox.width, hitBox.height, lvData)){
+                hitBox.y += airSpeed;
+                airSpeed += gravity;
+            }
+            else {
+                hitBox.y = getEntityYPosUnderRoofOrAboveFloor(hitBox, airSpeed);
+                if (airSpeed > 0)
+                    resetInAir();
+                else
+                    airSpeed = fallSpeedAfterCollision;
             }
         }
 
+
         updateXPos(xSpeed);
-        if (left || right)
-            moving = true;
     }
 
+    private void resetInAir(){
+        inAir = false;
+        airSpeed = 0;
+    }
 
     private void updateXPos(float xSpeed){
-        if (canMoveHere(hitBox.x + xSpeed, hitBox.y, hitBox.width, hitBox.height)) {
+        if (canMoveHere(hitBox.x + xSpeed, hitBox.y, hitBox.width, hitBox.height, lvData)) {
             hitBox.x += xSpeed;
         } else {
-            if (onFloor(hitBox)){
-                hitBox.y--;
-            }
+            hitBox.x = getEntityXPosNextToWall(hitBox, xSpeed);
         }
     }
 
     //Setter
+
+    public void setLvData(int[][] lvData) {
+        this.lvData = lvData;
+    }
+
     public void setLeft(boolean left) {
         this.left = left;
     }
