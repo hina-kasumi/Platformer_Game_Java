@@ -18,10 +18,10 @@ public abstract class Entity {
     }
 
     //Method
-    protected void drawHitBox(Graphics g){
+    protected void drawHitBox(Graphics g, int xlvOfSet){
         //for debug
         g.setColor(Color.red);
-        g.drawRect((int) hitBox.x, (int) hitBox.y, (int) hitBox.width, (int) hitBox.height);
+        g.drawRect((int) hitBox.x - xlvOfSet, (int) hitBox.y, (int) hitBox.width, (int) hitBox.height);
     }
 
     protected void initHitBox(float x, float y, int width, int height) {

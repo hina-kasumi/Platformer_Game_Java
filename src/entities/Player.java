@@ -42,9 +42,9 @@ public class Player extends Entity{
 
 
     //Method
-    public void render (Graphics g) {
-        g.drawImage(animations[playerAction][aniIndex], (int) (hitBox.x - xDrawOffset), (int) (hitBox.y - yDrawOffset), width, height, null);
-        drawHitBox(g);
+    public void render (Graphics g, int xlvOfSet) {
+        g.drawImage(animations[playerAction][aniIndex], (int) (hitBox.x - xDrawOffset) - xlvOfSet, (int) (hitBox.y - yDrawOffset), width, height, null);
+        drawHitBox(g, xlvOfSet);
     }
 
     public void update() {
@@ -131,12 +131,12 @@ public class Player extends Entity{
         }
         if (left) {
             xSpeed -= playerSpeed;
-            moving = true;
         }
         if (right) {
             xSpeed += playerSpeed;
-            moving = true;
         }
+        if (xSpeed != 0)
+            moving = true;
         if (!onFloor(hitBox, lvData))
             inAir = true;
 
