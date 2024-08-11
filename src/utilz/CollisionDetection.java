@@ -22,7 +22,11 @@ public class CollisionDetection {
         float xIndex = x / Game.TILES_SIZE;
         float yIndex = y / Game.TILES_SIZE;
 
-        int value = lvData[(int) yIndex][(int) xIndex];
+        return isTileSolid(xIndex, yIndex, lvData);
+    }
+
+    public static boolean isTileSolid (float xTile, float yTile, int[][] lvlData) {
+        int value = lvlData[(int) yTile][(int) xTile];
 
         return value != 11;
     }
@@ -54,6 +58,31 @@ public class CollisionDetection {
         } else
             // Jumping
             return currentTile * Game.TILES_SIZE;
+    }
+
+    public static boolean isFloor (Rectangle2D.Float hitBox, float xSpeed, int[][] lvData) {
+        return isSolid(hitBox.x + xSpeed, hitBox.y + hitBox.height + 1, lvData);
+    }
+
+    public static boolean isAllTilesWalkable (int xStart, int xEnd, int y, int[][] lvData) {
+        for (int i = 0; i < xEnd - xStart; i++) {
+            if (isTileSolid(xStart + i, y, lvData))
+                return false;
+            if (!isTileSolid(xStart + i, y + 1, lvData))
+                return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isSightClear (int[][] lvData, Rectangle2D.Float firstHitBox, Rectangle2D.Float secondHitBox, int yTile){
+        int firstXTile = (int) (firstHitBox.x / Game.TILES_SIZE);
+        int secondXTile = (int) (secondHitBox.x / Game.TILES_SIZE);
+
+        if ((firstXTile > secondXTile))
+            return isAllTilesWalkable(secondXTile, firstXTile, yTile, lvData);
+        else
+            return isAllTilesWalkable(firstXTile, secondXTile, yTile, lvData);
 
     }
 }
