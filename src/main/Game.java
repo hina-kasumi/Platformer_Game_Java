@@ -11,6 +11,8 @@ import java.awt.*;
 public class Game implements Runnable{
     private final GamePanel gamePanel;
     private GameWindow gameWindow;
+    static int FPS_SET = 120;
+    static int UPS_SET = 200;
 
     private Playing playing;
     private Menu menu;
@@ -29,6 +31,7 @@ public class Game implements Runnable{
         initClasses();
         this.gamePanel = new GamePanel(this);
         this.gameWindow = new GameWindow(gamePanel);
+        gamePanel.setFocusable(true);
         gamePanel.requestFocus();
 
         startGameLoop();
@@ -79,8 +82,7 @@ public class Game implements Runnable{
 
     @Override
     public void run() {
-        int FPS_SET = 120;
-        int UPS_SET = 200;
+
 
 
         double timePerFrame = 1_000_000_000.0 / FPS_SET;

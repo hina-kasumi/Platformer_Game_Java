@@ -2,6 +2,8 @@ package entities;
 
 import main.Game;
 
+import java.awt.geom.Rectangle2D;
+
 import static utilz.CollisionDetection.*;
 import static utilz.Constants.Directions.*;
 import static utilz.Constants.EnemyConstants.*;
@@ -16,12 +18,18 @@ public class Enemy extends Entity {
     protected int walkDir = LEFT;
     protected int tileY;
     protected final float attackDistance = Game.TILES_SIZE;
+    protected int maxHealth;
+    protected int currentHealth;
+    protected boolean active = true;
+    protected boolean attackChecked;
 
 
     public Enemy(float x, float y, int width, int height, int enemyType) {
         super(x, y, width, height);
         this.enemyType = enemyType;
         initHitBox(x, y, width, height);
+        maxHealth = GetMaxHealth(enemyType);
+        currentHealth = maxHealth;
     }
 
     protected void firstUpdateCheck(int[][] lvlData) {
@@ -45,19 +53,18 @@ public class Enemy extends Entity {
         float xSpeed = 0;
 
 
-        if (walkDir == LEFT){
+        if (walkDir == LEFT) {
             xSpeed = -walkSpeed;
-        } else if (walkDir == RIGHT){
+        } else if (walkDir == RIGHT) {
             xSpeed = walkSpeed;
         }
 
-        if (canMoveHere(hitBox.x + xSpeed, hitBox.y, hitBox.width, hitBox.height, lvData)){
-            if (isFloor(hitBox, xSpeed, lvData)){
+        if (canMoveHere(hitBox.x + xSpeed, hitBox.y, hitBox.width, hitBox.height, lvData)) {
+            if (isFloor(hitBox, xSpeed, lvData)) {
                 hitBox.x += xSpeed;
                 return;
             }
         }
-
         changeWalkDir();
     }
 
@@ -66,7 +73,16 @@ public class Enemy extends Entity {
             walkDir = RIGHT;
         else
             walkDir = LEFT;
+    }
 
+    public void resetEnemy() {
+        hitBox.x = x;
+        hitBox.y = y;
+        firstUpdate = true;
+        currentHealth = maxHealth;
+        newState(IDLE);
+        active = true;
+        fallSpeed = 0;
     }
 
     protected void turnTowardsPlayer (Player player){
@@ -104,6 +120,21 @@ public class Enemy extends Entity {
         aniIndex = 0;
     }
 
+    public void hurt(int amount) {
+        currentHealth -= amount;
+        if (currentHealth <= 0)
+            newState(DEAD);
+        else
+            newState(HIT);
+    }
+
+    protected void checkPlayerHit(Rectangle2D.Float attackBox, Player player) {
+        if (attackBox.intersects(player.hitBox))
+            player.changeHealth(-GetEnemyDmg(enemyType));
+        attackChecked = true;
+    }
+
+
     protected void updateAnimationTick() {
         aniTick++;
         if (aniTick >= aniSpeed) {
@@ -111,9 +142,10 @@ public class Enemy extends Entity {
             aniIndex++;
             if (aniIndex >= GetSpriteAmount(enemyType, enemyState)) {
                 aniIndex = 0;
-                if(enemyState == ATTACK)
-                    enemyState = IDLE;
-
+                switch (enemyState){
+                    case ATTACK, HIT -> enemyState = IDLE;
+                    case DEAD -> active = false;
+                }
             }
         }
     }
@@ -126,4 +158,7 @@ public class Enemy extends Entity {
         return enemyState;
     }
 
+    public boolean isActive() {
+        return active;
+    }
 }
