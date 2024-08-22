@@ -1,6 +1,7 @@
 package entities;
 
 import GameState.Playing;
+import levels.Level;
 import utilz.LoadSave;
 
 import java.awt.*;
@@ -18,7 +19,6 @@ public class EnemyManager {
     public EnemyManager(Playing playing) {
         this.playing = playing;
         loadEnemyImgs();
-        addEnemy();
     }
 
     private void loadEnemyImgs() {
@@ -32,14 +32,20 @@ public class EnemyManager {
                         CRABBY_HEIGHT_DEFAULT);
     }
 
-    private void addEnemy() {
-        crabbies = LoadSave.GetCrabs();
+    public void loadEnemy(Level level) {
+        crabbies = level.getCrabs();
     }
 
     public void update(int[][] lvData, Player player) {
+        boolean isAnyActive = false;
         for (Crabby crabby : crabbies) {
-            if (crabby.isActive())
+            if (crabby.isActive()) {
                 crabby.update(lvData, player);
+                isAnyActive = true;
+            }
+        }
+        if (!isAnyActive){
+            playing.setLvlCompeted(true);
         }
     }
 
@@ -62,8 +68,8 @@ public class EnemyManager {
     }
 
     public void checkEnemyHit(Rectangle2D.Float attackBox) {
-        for (Crabby c: crabbies){
-            if (attackBox.intersects(c.getHitBox())){
+        for (Crabby c : crabbies) {
+            if (attackBox.intersects(c.getHitBox())) {
                 if (c.isActive()) {
                     c.hurt(10);
                     return;
@@ -73,7 +79,7 @@ public class EnemyManager {
     }
 
     public void resetAllEnemy() {
-        for(Crabby c: crabbies){
+        for (Crabby c : crabbies) {
             c.resetEnemy();
         }
     }

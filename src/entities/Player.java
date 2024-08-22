@@ -64,8 +64,15 @@ public class Player extends Entity {
         super(x, y, width, height);
         loadAnimation();
         this.playing = playing;
-        initHitBox(x, y, (int) (20 * Game.SCALE), (int) (28 * Game.SCALE));
+        initHitBox(x, y, (int) (20 * Game.SCALE), (int) (27 * Game.SCALE));
         initAttackBox();
+    }
+
+    public void setSpawn(Point spawn) {
+        this.x = spawn.x;
+        this.y = spawn.y;
+        hitBox.x = x;
+        hitBox.y = y;
     }
 
     // Method
