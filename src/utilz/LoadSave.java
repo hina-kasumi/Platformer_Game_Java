@@ -35,7 +35,7 @@ public class LoadSave {
 
     public static BufferedImage getSpriteAtlas(String fileName) {
         BufferedImage img = null;
-        InputStream is = LoadSave.class.getResourceAsStream("Resource/" + fileName);
+        InputStream is = LoadSave.class.getResourceAsStream("/" + fileName);
         try {
             img = ImageIO.read(is);
 
@@ -52,7 +52,7 @@ public class LoadSave {
     }
 
     public static BufferedImage[] getAllLevels() {
-        URL url = LoadSave.class.getResource("\\Resource\\lvls");
+        URL url = LoadSave.class.getResource("/lvls");
         File file = null;
 
         try {
